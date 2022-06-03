@@ -7,15 +7,22 @@ class TodoItem extends React.Component {
   state = {
     editing: false,
   };
+
   handleEditing = () => {
     console.log("edit mode activated");
     this.setState({
       editing: true,
     });
   };
+
   handleEditDone = (event) => {
     if (event.key === "Enter") this.setState({ editing: false });
   };
+
+  componentWillUnmount() {
+    console.log("Cleaning up...");
+  }
+
   render() {
     const completedStyle = {
       fontStyle: "italic",

@@ -7,23 +7,7 @@ import TodoList from "./TodoList";
 
 class TodoContainer extends React.Component {
   state = {
-    todos: [
-      {
-        id: 1,
-        title: "Setup development environment",
-        completed: true,
-      },
-      {
-        id: 2,
-        title: "Develop website and add content",
-        completed: false,
-      },
-      {
-        id: 3,
-        title: "Deploy to live server",
-        completed: false,
-      },
-    ],
+    todos: [],
   };
 
   handleChange = (id) => {
@@ -94,6 +78,28 @@ class TodoContainer extends React.Component {
       }),
     });
   };
+
+  componentDidMount() {
+    console.log('componentdidmount called')
+    // fetch("https://jsonplaceholder.typicode.com/todos?_limit=10")
+    //   .then((response) => response.json())
+    //   .then((data) => this.setState({ todos: data }))
+    //   .catch((err) => console.log);
+    const todos = localStorage.getItem("todos");
+    console.log('todos: ', todos);
+    const loadedTodos = JSON.parse(todos);
+    if (loadedTodos) {
+      this.setState({
+        todos: loadedTodos,
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.todos !== this.state.todos) {
+      localStorage.setItem("todos", JSON.stringify(this.state.todos));
+    }
+  }
 
   render() {
     return (
