@@ -1,122 +1,90 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import Header from "./Header";
 import InputTodo from "./InputTodo";
 import TodoList from "./TodoList";
 
-class TodoContainer extends React.Component {
-  state = {
-    todos: [],
-  };
+function getInitialTodos() {
+  const temp = localStorage.getItem("todos");
+  const savedTodos = JSON.parse(temp);
+  return savedTodos || [];
+}
 
-  handleChange = (id) => {
-    this.setState((prevState) => ({
-      todos: prevState.todos.map((todo) => {
+const TodoContainer = (props) => {
+  const [todos, setTodos] = useState(getInitialTodos());
+
+  // useEffect(() => {
+  //   console.log("use effect");
+  //   //getting the todos items same as componentdidmount
+  //   const todoItems = localStorage.getItem("todos");
+  //   const loadedTodos = JSON.parse(todoItems);
+  //   if (todoItems) {
+  //     setTodos(loadedTodos);
+  //   }
+  // }, []);
+
+  useEffect(() => {
+    // storing the todo items same as componentdidupdate
+    console.log("use effect 2");
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
+  const handleChange = (id) => {
+    setTodos((prevState) =>
+      prevState.map((todo) => {
         if (todo.id === id) {
           return {
             ...todo,
             completed: !todo.completed,
           };
         }
-
         return todo;
-      }),
-    }));
-
-    // //another way to implement the above
-    // this.setState((prevState) => {
-    //   return {
-    //     todos: prevState.todos.map((todo) => {
-    //       if (todo.id === id) {
-    //         return {
-    //           ...todo,
-    //           completed: !todo.completed,
-    //         };
-    //       }
-    //       return todo;
-    //     }),
-    //   };
-    // });
+      })
+    );
   };
 
-  delTodo = (id) => {
-    this.setState((prevState) => ({
-      todos: prevState.todos.filter((todo) => {
+  const delTodo = (id) => {
+    setTodos([
+      ...todos.filter((todo) => {
         return todo.id !== id;
       }),
-    }));
+    ]);
   };
 
-  // delTodo = (id) => {
-  //   this.setState({
-  //     todos: [
-  //       ...this.state.todos.filter((todo) => {
-  //         return todo.id !== id;
-  //       }),
-  //     ],
-  //   });
-  // };
-
-  addTodo = (title) => {
+  const addTodo = (title) => {
     const newTodo = {
       id: uuidv4(),
       title,
       completed: false,
     };
-    this.setState({
-      todos: [...this.state.todos, newTodo],
-    });
+    setTodos([...todos, newTodo]);
   };
 
-  updateTodo = (title, id) => {
-    this.setState({
-      todos: this.state.todos.map((todo) => {
+  const updateTodo = (title, id) => {
+    setTodos(
+      todos.map((todo) => {
         if (todo.id === id) todo.title = title;
 
         return todo;
-      }),
-    });
+      })
+    );
   };
 
-  componentDidMount() {
-    console.log('componentdidmount called')
-    // fetch("https://jsonplaceholder.typicode.com/todos?_limit=10")
-    //   .then((response) => response.json())
-    //   .then((data) => this.setState({ todos: data }))
-    //   .catch((err) => console.log);
-    const todos = localStorage.getItem("todos");
-    console.log('todos: ', todos);
-    const loadedTodos = JSON.parse(todos);
-    if (loadedTodos) {
-      this.setState({
-        todos: loadedTodos,
-      });
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.todos !== this.state.todos) {
-      localStorage.setItem("todos", JSON.stringify(this.state.todos));
-    }
-  }
-
-  render() {
-    return (
-      <div className="container">
-        <div className="inner">
-          <Header />
-          <InputTodo addTodoProps={this.addTodo} />
-          <TodoList
-            todos={this.state.todos}
-            handleChangeProps={this.handleChange}
-            deleteTodoProps={this.delTodo}
-            updateTodoProps={this.updateTodo}
-          />
-        </div>
+  return (
+    <div className="container">
+      <div className="inner">
+        <Header />
+        <InputTodo addTodoProps={addTodo} />
+        <TodoList
+          todos={todos}
+          handleChangeProps={handleChange}
+          deleteTodoProps={delTodo}
+          updateTodoProps={updateTodo}
+        />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default TodoContainer;
