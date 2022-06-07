@@ -1,10 +1,27 @@
 import React, { useState } from "react";
 import { FaPlusCircle } from "react-icons/fa";
+import { connect } from "react-redux";
+import { v4 as uuidv4 } from "uuid";
+
+const mapStateToProps = (state) => {
+  return {
+    todos: state.todos,
+  };
+};
 
 const InputTodo = (props) => {
   const [inputText, setInputText] = useState({
     title: "",
   });
+
+  const addTodo = (title) => {
+    const newTodo = {
+      id: uuidv4(),
+      title,
+      completed: false,
+    };
+    props.dispatch({ type: "ADD", payload: newTodo });
+  };
 
   const handleChange = (e) => {
     setInputText({
@@ -16,7 +33,7 @@ const InputTodo = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (inputText.title.trim()) {
-      props.addTodoProps(inputText.title);
+      addTodo(inputText.title);
       setInputText({
         title: "",
       });
@@ -44,4 +61,4 @@ const InputTodo = (props) => {
   );
 };
 
-export default InputTodo;
+export default connect(mapStateToProps)(InputTodo);

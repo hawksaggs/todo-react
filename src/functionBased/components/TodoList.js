@@ -5,15 +5,7 @@ const TodoList = (props) => {
   return (
     <ul>
       {props.todos.map((todo) => {
-        return (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            handleChangeProps={props.handleChangeProps}
-            deleteTodoProps={props.deleteTodoProps}
-            updateTodoProps={props.updateTodoProps}
-          />
-        );
+        return <TodoItem key={todo.id} todo={todo} />;
       })}
     </ul>
   );

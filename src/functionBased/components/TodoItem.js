@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { FaTrash } from "react-icons/fa";
+import { connect } from "react-redux";
 
 import styles from "./TodoItem.module.scss";
+
+const mapStateToProps = (state) => {
+  return {
+    todos: state.todos,
+  };
+};
 
 const TodoItem = (props) => {
   const [editing, setEditing] = useState(false);
@@ -19,6 +26,18 @@ const TodoItem = (props) => {
 
   const handleEditDone = (event) => {
     if (event.key === "Enter") setEditing(false);
+  };
+
+  const delTodo = (id) => {
+    props.dispatch({ type: "DELETE", payload: { id } });
+  };
+
+  const updateTodo = (title, id) => {
+    props.dispatch({ type: "UPDATE", payload: { title, id } });
+  };
+
+  const handleChange = (id) => {
+    props.dispatch({ type: "COMPLETE", payload: { id } });
   };
 
   const completedStyle = {
@@ -43,9 +62,9 @@ const TodoItem = (props) => {
           type="checkbox"
           className={styles.checkbox}
           checked={completed}
-          onChange={() => props.handleChangeProps(id)}
+          onChange={() => handleChange(id)}
         />
-        <button onClick={() => props.deleteTodoProps(id)}>
+        <button onClick={() => delTodo(id)}>
           <FaTrash style={{ color: "orangered", fontSize: "16px" }} />
         </button>
         <span style={completed ? completedStyle : null}>{title}</span>
@@ -56,7 +75,7 @@ const TodoItem = (props) => {
         style={editMode}
         value={title}
         onChange={(e) => {
-          props.updateTodoProps(e.target.value, id);
+          updateTodo(e.target.value, id);
         }}
         onKeyDown={handleEditDone}
       />
@@ -64,4 +83,4 @@ const TodoItem = (props) => {
   );
 };
 
-export default TodoItem;
+export default connect(mapStateToProps)(TodoItem);
